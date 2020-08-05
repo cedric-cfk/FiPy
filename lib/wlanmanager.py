@@ -1,6 +1,7 @@
 import binascii
 import machine
 import network
+from network import LTE
 import time
 import sys
 
@@ -11,6 +12,7 @@ class WLanManager():
     def __init__(self, config):
         self.config = config
         self.wlan = network.WLAN()
+        self.lte = LTE()
 
     def configure_antenna(self):
         # https://community.hiveeyes.org/t/signalstarke-des-wlan-reicht-nicht/2541/11
@@ -90,8 +92,30 @@ class WLanManager():
         else:
             time.sleep(5)
 
-    def _enable_client(self):
+    def isconnected(self):
+        return (self.wlan.mode() == network.WLAN.STA and self.wlan.isconnected()) or self.lte.isconnected()
 
+    def disconnect_lte(self):
+        print("starting dettaching")
+        self.lte.disconnect()
+        print("Disconnected")
+        self.lte.dettach()
+        print("LTE disconnected")
+
+    def enable_lte(self):
+        lte = LTE()         # instantiate the LTE object
+        lte.attach()        # attach the cellular modem to a base station
+        print("trying to attach")
+        while not lte.isattached():
+            time.sleep(0.25)
+        lte.connect()       # start a data session and obtain an IP address
+        print("trying to connect")
+        while not lte.isconnected():
+            time.sleep(0.25)
+        print("Connected to LTE")
+
+    def _enable_client(self):
+        print("Connecting to WLAN")
         # Resolve mode to its numeric code
         mode = network.WLAN.STA
 

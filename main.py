@@ -5,7 +5,6 @@ import machine
 from machine import Pin, I2C
 import micropython
 import network
-from network import LTE
 import pycom
 import sys
 import time
@@ -223,36 +222,16 @@ def start_measurement():
         print('   WLAN:   ', end = ' ')
         # Log measured values, if possible
         if ( _config.get_value('networking', 'wlan', 'enabled')
-                and _wlan.mode() == network.WLAN.STA
-                and _wlan.isconnected()
+                and _wm.isconnected()
                 and _beep is not None):
             print("test stuff")
-            log("test")
-            _wlan.disconnect()
-            #_wlan.active(False)
-            time.sleep(0.25)
-            print("-------------- WLAN Connected? ------------------ ", _wlan.isconnected())
-            lte = LTE()         # instantiate the LTE object
-            lte.attach()        # attach the cellular modem to a base station
-            while not lte.isattached():
-                time.sleep(0.25)
-            lte.connect()       # start a data session and obtain an IP address
-            while not lte.isconnected():
-                time.sleep(0.25)
-            print("Connected to LTE")
-
             try:
                 _beep.add(data)
             except Exception as e:
                 print("Error")
                 print(e)
-            print("starting dettaching")
-            lte.disconnect()
-            print("Disconnected")
-            lte.dettach()
-            print("LTE disconnected")
-            _wm.enable_client()
-            print("Wlan back up")
+                _wm.disconnect_lte()
+
         log(data)
         """ Data on SD-Card """
         # print('   Data on SD-Card')
@@ -265,8 +244,8 @@ def start_measurement():
 
         if ( _config.get_value('networking', 'wlan', 'enabled')
                 and _beep is not None
-                and ((not _wlan.mode() == network.WLAN.STA) or
-                (not _wlan.isconnected()))
+                and not _wm.isconnected()#((not _wlan.mode() == network.WLAN.STA) or
+                #(not _wlan.isconnected()))
                 ):
             log("wlan is enabled but not connected.")
             until_wifi_reconnect -= 1
@@ -361,12 +340,13 @@ wdt.feed()
 try:
     if _config.get_value('networking', 'wlan', 'enabled'):
         log("WLan is enabled, trying to connect.")
-        _wm.enable_client()
+        #_wm.enable_client()
+        _wm.enable_lte()
         log("connected")
         _beep = logger.beep
 
         # add to time server
-        if _wlan.mode() == network.WLAN.STA and _wlan.isconnected():
+        if _wm.isconnected():
             try:
                 rtc.ntp_sync("pool.ntp.org")
             except:

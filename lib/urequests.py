@@ -135,6 +135,8 @@ def request(method, url, data=None, json=None, headers={}, stream=None):
     resp.status_code = status
     resp.reason = reason
     resp.close()
+    #s.close()
+    print("finished Upload")
     return resp
 
 
