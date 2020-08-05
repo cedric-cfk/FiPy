@@ -5,6 +5,7 @@ import machine
 from machine import Pin, I2C
 import micropython
 import network
+from network import LTE
 import pycom
 import sys
 import time
@@ -225,7 +226,33 @@ def start_measurement():
                 and _wlan.mode() == network.WLAN.STA
                 and _wlan.isconnected()
                 and _beep is not None):
-            _beep.add(data)
+            print("test stuff")
+            log("test")
+            _wlan.disconnect()
+            #_wlan.active(False)
+            time.sleep(0.25)
+            print("-------------- WLAN Connected? ------------------ ", _wlan.isconnected())
+            lte = LTE()         # instantiate the LTE object
+            lte.attach()        # attach the cellular modem to a base station
+            while not lte.isattached():
+                time.sleep(0.25)
+            lte.connect()       # start a data session and obtain an IP address
+            while not lte.isconnected():
+                time.sleep(0.25)
+            print("Connected to LTE")
+
+            try:
+                _beep.add(data)
+            except Exception as e:
+                print("Error")
+                print(e)
+            print("starting dettaching")
+            lte.disconnect()
+            print("Disconnected")
+            lte.dettach()
+            print("LTE disconnected")
+            _wm.enable_client()
+            print("Wlan back up")
         log(data)
         """ Data on SD-Card """
         # print('   Data on SD-Card')
@@ -303,7 +330,7 @@ def enable_ap(pin=None):
         webserver.mws.Start(threaded=True)
 
 ###### run this #######
-
+print("test")
 # Initial SSID scan
 no_ssids = _wm.scan()
 log("Start -> {:d} SSIDS found".format(no_ssids))
@@ -335,6 +362,7 @@ try:
     if _config.get_value('networking', 'wlan', 'enabled'):
         log("WLan is enabled, trying to connect.")
         _wm.enable_client()
+        log("connected")
         _beep = logger.beep
 
         # add to time server
@@ -365,7 +393,8 @@ try:
         _wlan.deinit()
         start_measurement()
 
-except:
+except Exception as e:
+    print(e)
     log("Exception am Ende des Programms")
     log("Error, dumping memory")
     log(sys.exc_info())

@@ -13,7 +13,7 @@ class Beep:
             urequests.post(
                 '{}/api/sensors'.format(self.server),
                 json=data)
-        except:
+        except Exception as e:
             self.failures += 1
             print("Error sending data! (Count: {:d})".format(self.failures))
             print(sys.exc_info())
