@@ -15,7 +15,7 @@ import webserver
 from config import Config
 from sensors import hx711, bme280
 import sensors.ssd1306
-from wlanmanager import WLanManager
+from network_manager import NetworkManager
 
 from lib.onewire     import OneWire
 from sensors.ds18x20 import DS18X20
@@ -51,7 +51,7 @@ reset_causes = {
 _config = Config.getInstance()
 _ds_positions = {v: k for k, v in
                  _config.get_value('sensors', 'ds1820', 'positions').items()}
-_wm = WLanManager(_config)
+_wm = NetworkManager(_config)
 _wlan = network.WLAN(id=0)
 
 
@@ -305,8 +305,8 @@ def enable_ap(pin=None):
 ###### run this #######
 
 # Initial SSID scan
-no_ssids = _wm.scan()
-log("Start -> {:d} SSIDS found".format(no_ssids))
+#no_ssids = _wm.scan()
+#log("Start -> {:d} SSIDS found".format(no_ssids))
 
 # init time
 try:

@@ -6,7 +6,7 @@ import sys
 
 from config import Config
 
-class WLanManager():
+class WLan():
 
     def __init__(self, config):
         self.config = config
@@ -144,6 +144,7 @@ class WLanManager():
                 if not self.wlan.isconnected():
                     time.sleep(1)
 
+    '''
     def enable_client(self):
         max_retries = 3
         for i in range(max_retries):
@@ -154,3 +155,4 @@ class WLanManager():
             else:
                 if self.wlan.mode() == network.WLAN.STA and self.wlan.isconnected():
                     return
+    '''
