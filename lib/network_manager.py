@@ -6,6 +6,7 @@ import network
 import logger
 from config import Config
 from networks.wlan import WLan
+from networks.lte_M1 import lte_M1
 
 class NetworkManager():
 
@@ -40,10 +41,10 @@ class Switcher(object):
         self.config = config
         method=getattr(self, method_name, lambda : self.invalid())
         return method()
-    def wlan1(self):
+    def wlan(self):
         return WLan(self.config)
-    def wlan2(self):
-        return WLan(self.config)
+    def lte_M1(self):
+        return lte_M1()
     def invalid(self):
         raise ValueError('invalid network configured in settings.json')
 

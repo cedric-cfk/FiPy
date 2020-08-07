@@ -2,22 +2,10 @@
     "networking": {
         "general": {
           "enabled": true,
-          "using": "wlan1",
+          "using": "lte_M1",
         },
 
-        "wlan1": {
-            "enabled": true,
-            "ssid": "",
-            "encryption": 0,
-            "password": "",
-            "timeout": 1000,
-            "ifconfig": "dhcp",
-            "available": {},
-            "antenna_external": false,
-            "antenna_pin": "P12"
-        },
-
-        "wlan2": {
+        "wlan": {
             "enabled": true,
             "ssid": "",
             "encryption": 0,
@@ -40,7 +28,7 @@
         "lora": {
         },
 
-        "lte": {
+        "lte_M1": {
         }
     },
 

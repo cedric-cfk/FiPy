@@ -294,7 +294,8 @@ def enable_ap(pin=None):
     wdt.init(timeout=10*60*1000)
     if not _wlan.mode() == network.WLAN.AP:
         loop_run = False
-        getattr(_wm, 'enable_ap')()
+        #getattr(_wm, 'enable_ap')()
+        _wm.enable_ap()
         log("AP enabled")
         rgb_led(0x000020)
     if not webserver.mws.IsStarted():
@@ -334,7 +335,7 @@ try:
         log("WLan is enabled, trying to connect.")
         _wm.enable_client()
         _beep = logger.beep
-        
+
         # add to time server
         if _wm.is_connected():
             try:
@@ -363,7 +364,7 @@ try:
         _wlan.deinit()
         start_measurement()
 
-except:
+except Exception as e:
     sys.print_exception(e)
     log("Exception am Ende des Programms")
     log("Error, dumping memory")
