@@ -1,7 +1,23 @@
 {
     "networking": {
+        "general": {
+          "enabled": true,
+          "using": "wlan1",
+        },
 
-        "wlan": {
+        "wlan1": {
+            "enabled": true,
+            "ssid": "",
+            "encryption": 0,
+            "password": "",
+            "timeout": 1000,
+            "ifconfig": "dhcp",
+            "available": {},
+            "antenna_external": false,
+            "antenna_pin": "P12"
+        },
+
+        "wlan2": {
             "enabled": true,
             "ssid": "",
             "encryption": 0,

@@ -12,6 +12,9 @@ class WLan():
         self.config = config
         self.wlan = network.WLAN()
 
+    def is_connected(self):
+        return self.wlan.mode() == network.WLAN.STA and self.wlan.isconnected()
+
     def configure_antenna(self):
         # https://community.hiveeyes.org/t/signalstarke-des-wlan-reicht-nicht/2541/11
         # https://docs.pycom.io/firmwareapi/pycom/network/wlan/
@@ -91,14 +94,14 @@ class WLan():
             time.sleep(5)
 
     def _enable_client(self):
-
+        print("wlan started")
         # Resolve mode to its numeric code
         mode = network.WLAN.STA
-
+        print("wlan1")
         ssid = self.config.get_value('networking', 'wlan', 'ssid')
         password = self.config.get_value('networking', 'wlan', 'password')
         encryption = int(self.config.get_value('networking', 'wlan', 'encryption'))
-
+        print("wlan1")
         if (not ssid) or (not password and encryption != 0):
             print("No WLan connection configured!")
             return
@@ -111,7 +114,7 @@ class WLan():
         except:
             print("WLan restart failed!")
             raise
-
+        print("wlan2")
 
         try:
             ifconfig = self.config.get_value('networking', 'wlan', 'ifconfig')
@@ -128,7 +131,7 @@ class WLan():
         except:
             print("WLan ifconfig failed!")
             raise
-
+        print("wlan3")
         try:
             self.wlan.connect(ssid,
                               auth=(encryption, password),
@@ -143,8 +146,8 @@ class WLan():
             for i in range(10):
                 if not self.wlan.isconnected():
                     time.sleep(1)
+        print("fin")
 
-    '''
     def enable_client(self):
         max_retries = 3
         for i in range(max_retries):
@@ -155,4 +158,3 @@ class WLan():
             else:
                 if self.wlan.mode() == network.WLAN.STA and self.wlan.isconnected():
                     return
-    '''
