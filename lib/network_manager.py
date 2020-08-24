@@ -8,43 +8,57 @@ from config import Config
 from networks.wlan import WLan
 from networks.lte_M1 import lte_M1
 
+netwok = None
+wlan = None
+
 class NetworkManager():
 
-    def __init__(self, config):
-        self.config = config
-        self.network = None
-        self.wlan = None
+    def __init__(self, _config):
+        global config
+        config = _config
 
     def enable_client(self):
         #Initialising network defined by config
-        if self.network is None:
-            s = Switcher()
-            self.network = s.indirect(self.config.get_value('networking', 'general', 'using'), self.config)
+        if netwok is None:
+            Switcher().indirect(config.get_value('networking', 'general', 'using'))
         print("starting client")
-        self.network.enable_client()
+        netwok.enable_client()
 
     #def scan(self):
-    #    return self.network.scan()
+    #    return network.scan()
+
+    def ap_enabled(self):
+        if wlan is not None and wlan.mode() == network.WLAN.AP:
+            return True
+        return False
 
     def enable_ap(self):
         print("AP enabled--------------------------")
-        if self.wlan is None:
-            self.wlan = WLan(self.config)
+        global wlan
+        if wlan is None:
+            wlan = WLan(config)
 
-        self.wlan.enable_ap()
+        wlan.enable_ap()
 
     def is_connected(self):
-        return self.network.is_connected()
+        return netwok.is_connected()
 
 class Switcher(object):
-    def indirect(self, method_name, config):
-        self.config = config
+    def indirect(self, method_name):
         method=getattr(self, method_name, lambda : self.invalid())
         return method()
     def wlan(self):
-        return WLan(self.config)
+        global netwok
+        netwok = WLan(config)
+        global wlan
+        wlan = netwok
     def lte_M1(self):
-        return lte_M1()
+        global netwok
+        netwok = lte_M1()
+    def lte_NB1(self):
+        #global netwok
+        #netwok = lte_NB1()
+        raise ValueError('network lte_NB1 not jet implemented')
     def invalid(self):
         raise ValueError('invalid network configured in settings.json')
 
@@ -53,8 +67,8 @@ class Switcher(object):
         print('   WLAN:   ', end = ' ')
         # log measured values, if possible
         if ( self.config.get_value('networking', 'wlan', 'enabled')
-                and self.wlan.mode() == network.WLAN.STA
-                and self.wlan.isconnected()
+                and wlan.mode() == network.WLAN.STA
+                and wlan.isconnected()
                 and self.beep is not None):
             self.beep.add(data)
         log(_csv, data)
@@ -69,8 +83,8 @@ class Switcher(object):
 
         if ( self.config.get_value('networking', 'wlan', 'enabled')
                 and self.beep is not None
-                and ((not self.wlan.mode() == network.WLAN.STA) or
-                (not self.wlan.isconnected()))
+                and ((not wlan.mode() == network.WLAN.STA) or
+                (not wlan.isconnected()))
                 ):
             log(_csv, "wlan is enabled but not connected.")
             until_wifi_reconnect -= 1
@@ -95,7 +109,7 @@ class Switcher(object):
                 self.beep = logger.beep
 
                 # add to time server
-                if self.wlan.mode() == network.WLAN.STA and self.wlan.isconnected():
+                if wlan.mode() == network.WLAN.STA and wlan.isconnected():
                     try:
                         rtc.ntp_sync("pool.ntp.org")
                     except:
@@ -119,7 +133,7 @@ class Switcher(object):
                         return
             else:
                 log(_csv, "Measuring without network connection.")
-                self.wlan.deinit()
+                wlan.deinit()
                 return
 
         except Exception as e:
