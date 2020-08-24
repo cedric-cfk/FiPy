@@ -332,7 +332,7 @@ log("Start -> Starting measurement setup...")
 wdt.feed()
 try:
     if _config.get_value('networking', 'general', 'enabled'):
-        log("WLan is enabled, trying to connect.")
+        log("Network is enabled, trying to connect.")
         _wm.enable_client()
         _beep = logger.beep
 
