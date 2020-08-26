@@ -225,6 +225,7 @@ def start_measurement():
         if (_config.get_value('networking', 'general', 'enabled')
                 and _wm.is_connected()
                 and _beep is not None):
+            wdt.feed()
             _beep.add(data)
         log(data)
         """ Data on SD-Card """
@@ -245,7 +246,7 @@ def start_measurement():
             log("trying to reconnect in {} intervals".format(until_wifi_reconnect))
             if until_wifi_reconnect <= 0:
                 log('wlan not connected try to reconnect')
-                wdt.init(timeout=1*60*1000)
+                wdt.init(timeout=1*305*1000)
                 _wm.enable_client()
                 until_wifi_reconnect = _config.get_value('general', 'general', 'until_wifi_reconnect')
                 wdt.init(timeout=3*measurement_interval*1000)
