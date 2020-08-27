@@ -287,7 +287,7 @@ def ap_already_enabled():
 
 # enable ap
 def enable_ap(pin=None):
-    global _wm, loop_run, _wlan, wdt, button_ap
+    global _wm, loop_run, wdt, button_ap
     # if in button mode, make sure we don't enter this function again
     if _config.get_value('general', 'general', 'button_ap_enabled'):
         button_ap.callback(handler=ap_already_enabled)
@@ -306,8 +306,8 @@ def enable_ap(pin=None):
 
 # Initial SSID scan
 ''' Wofür brauchen wir das? kann man das weglassen? so muss man nicht noch das wlan modul initialisieren(TODO) '''
-#no_ssids = _wm.scan()
-#log("Start -> {:d} SSIDS found".format(no_ssids))
+no_ssids = _wm.scan()
+log("Start -> {:d} SSIDS found".format(no_ssids))
 
 # init time
 try:
@@ -332,7 +332,7 @@ if _config.get_value('general', 'general', 'button_ap_enabled'):
 log("Start -> Starting measurement setup...")
 wdt.feed()
 try:
-    if _config.get_value('networking', 'general', 'enabled'):
+    if _config.get_value('networking', 'network_config', 'enabled'):
         log("Network is enabled, trying to connect.")
         _wm.enable_client()
         _beep = logger.beep
@@ -362,7 +362,8 @@ try:
                 start_measurement()
     else:
         log("Measuring without network connection.")
-        _wlan.deinit()
+        ''' TODO it wasn't disabled orignaly '''
+        #_wlan.deinit()
         start_measurement()
 
 except Exception as e:

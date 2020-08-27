@@ -15,14 +15,17 @@ class WLan():
     def is_connected(self):
         return self.wlan.mode() == network.WLAN.STA and self.wlan.isconnected()
 
+    def is_inApMode(self):
+        return self.wlan.mode() == network.WLAN.AP
+
     def configure_antenna(self):
         # https://community.hiveeyes.org/t/signalstarke-des-wlan-reicht-nicht/2541/11
         # https://docs.pycom.io/firmwareapi/pycom/network/wlan/
 
-        antenna_external = self.config.get_value('networking', 'wlan', 'antenna_external')
+        antenna_external = self.config.get_value('networking', 'network_config', 'antenna_external')
         print("Using Antenna: ", antenna_external)
         if antenna_external:
-            antenna_pin = self.config.get_value('networking', 'wlan', 'antenna_pin')
+            antenna_pin = self.config.get_value('networking', 'network_config', 'antenna_pin')
             print('WiFi: Using external antenna on pin %s', antenna_pin)
 
             # To use an external antenna, set P12 as output pin.
@@ -55,7 +58,7 @@ class WLan():
             print(ssid['ssid'])
             for item in ssid:
                 print("{}: {}".format(item,ssid[item]))
-        self.config.set_value('networking', 'wlan', 'available', ssids)
+        self.config.set_value('networking', 'network_config', 'available', ssids)
         self.config.write()
         self.wlan.deinit()
         return len(ssids)
@@ -69,7 +72,7 @@ class WLan():
         password = self.config.get_value('networking', 'accesspoint', 'password')
         encryption = self.config.get_value('networking', 'accesspoint', 'encryption')
         channel = self.config.get_value('networking', 'accesspoint', 'channel')
-
+        
         try:
             self.wlan.deinit()
             time.sleep(1)
@@ -98,9 +101,9 @@ class WLan():
         # Resolve mode to its numeric code
         mode = network.WLAN.STA
         print("wlan1")
-        ssid = self.config.get_value('networking', 'wlan', 'ssid')
-        password = self.config.get_value('networking', 'wlan', 'password')
-        encryption = int(self.config.get_value('networking', 'wlan', 'encryption'))
+        ssid = self.config.get_value('networking', 'network_config', 'ssid')
+        password = self.config.get_value('networking', 'network_config', 'password')
+        encryption = int(self.config.get_value('networking', 'network_config', 'encryption'))
         print("wlan1")
         if (not ssid) or (not password and encryption != 0):
             print("No WLan connection configured!")
@@ -117,12 +120,12 @@ class WLan():
         print("wlan2")
 
         try:
-            ifconfig = self.config.get_value('networking', 'wlan', 'ifconfig')
+            ifconfig = self.config.get_value('networking', 'network_config', 'ifconfig')
             if ifconfig == 'static':
-                ipaddress = self.config.get_value('networking', 'wlan', 'ipaddress')
-                subnet = self.config.get_value('networking', 'wlan', 'subnet')
-                gateway = self.config.get_value('networking', 'wlan', 'gateway')
-                dns = self.config.get_value('networking', 'wlan', 'dns')
+                ipaddress = self.config.get_value('networking', 'network_config', 'ipaddress')
+                subnet = self.config.get_value('networking', 'network_config', 'subnet')
+                gateway = self.config.get_value('networking', 'network_config', 'gateway')
+                dns = self.config.get_value('networking', 'network_config', 'dns')
 
                 ip_config = (ipaddress, subnet, gateway, dns)
                 self.wlan.ifconfig(id=0, config=ip_config)
