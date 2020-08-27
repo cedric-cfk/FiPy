@@ -18,6 +18,9 @@ class WLan():
     def is_inApMode(self):
         return self.wlan.mode() == network.WLAN.AP
 
+    def joined_ap_info(self):
+        return self.wlan.joined_ap_info()
+
     def configure_antenna(self):
         # https://community.hiveeyes.org/t/signalstarke-des-wlan-reicht-nicht/2541/11
         # https://docs.pycom.io/firmwareapi/pycom/network/wlan/
@@ -72,7 +75,7 @@ class WLan():
         password = self.config.get_value('networking', 'accesspoint', 'password')
         encryption = self.config.get_value('networking', 'accesspoint', 'encryption')
         channel = self.config.get_value('networking', 'accesspoint', 'channel')
-        
+
         try:
             self.wlan.deinit()
             time.sleep(1)

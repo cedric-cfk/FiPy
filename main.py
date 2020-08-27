@@ -52,8 +52,7 @@ _config = Config.getInstance()
 _ds_positions = {v: k for k, v in
                  _config.get_value('sensors', 'ds1820', 'positions').items()}
 print("Starting NetworkManager")
-_wm = NetworkManager(_config)
-#_wlan = network.WLAN(id=0)
+_nm = NetworkManager(_config)
 
 
 measurement_interval = _config.get_value('general', 'general', 'measurement_interval')
@@ -116,7 +115,7 @@ def start_measurement():
         #read RSSI
         try:
             #wlan = network.WLAN(mode=network.WLAN.STA)
-            data['rssi']= _wlan.joined_ap_info().rssi
+            data['rssi']= _nm.joined_ap_info().rssi
         except:
             data['rssi']= 0
             pass
@@ -223,7 +222,7 @@ def start_measurement():
         print('   ', _config.get_value('networking', 'network_config', 'using'), ':   ', end = ' ')
         # Log measured values, if possible
         if (_config.get_value('networking', 'network_config', 'enabled')
-                and _wm.is_connected()
+                and _nm.is_connected()
                 and _beep is not None):
             wdt.feed()
             _beep.add(data)
@@ -238,16 +237,15 @@ def start_measurement():
         # Trying to reconnect to wifi if possible:
         '''     Hier noch gucken ob man das veralgemeinern kann. Ansonsten in network)manager packen(TODO)     '''
         if ( _config.get_value('networking', 'network_config', 'enabled')
-                and _config.get_value('networking', 'network_config', 'using') == "wlan"
                 and _beep is not None
-                and not _wm.is_connected()):
+                and not _nm.is_connected()):
             log("wlan is enabled but not connected.")
             until_wifi_reconnect -= 1
             log("trying to reconnect in {} intervals".format(until_wifi_reconnect))
             if until_wifi_reconnect <= 0:
                 log('wlan not connected try to reconnect')
                 wdt.init(timeout=1*305*1000)
-                _wm.enable_client()
+                _nm.enable_client()
                 until_wifi_reconnect = _config.get_value('general', 'general', 'until_wifi_reconnect')
                 wdt.init(timeout=3*measurement_interval*1000)
         else:
@@ -287,16 +285,16 @@ def ap_already_enabled():
 
 # enable ap
 def enable_ap(pin=None):
-    global _wm, loop_run, wdt, button_ap
+    global _nm, loop_run, wdt, button_ap
     # if in button mode, make sure we don't enter this function again
     if _config.get_value('general', 'general', 'button_ap_enabled'):
         button_ap.callback(handler=ap_already_enabled)
         print("Called. Pin {}.".format(pin))
     wdt.init(timeout=10*60*1000)
-    if not _wm.ap_enabled():
+    if not _nm.ap_enabled():
         loop_run = False
-        #getattr(_wm, 'enable_ap')()
-        _wm.enable_ap()
+        #getattr(_nm, 'enable_ap')()
+        _nm.enable_ap()
         log("AP enabled")
         rgb_led(0x000020)
     if not webserver.mws.IsStarted():
@@ -305,8 +303,7 @@ def enable_ap(pin=None):
 ###### run this #######
 
 # Initial SSID scan
-''' Wofür brauchen wir das? kann man das weglassen? so muss man nicht noch das wlan modul initialisieren(TODO) '''
-no_ssids = _wm.scan()
+no_ssids = _nm.scan()
 log("Start -> {:d} SSIDS found".format(no_ssids))
 
 # init time
@@ -334,11 +331,11 @@ wdt.feed()
 try:
     if _config.get_value('networking', 'network_config', 'enabled'):
         log("Network is enabled, trying to connect.")
-        _wm.enable_client()
+        _nm.enable_client()
         _beep = logger.beep
 
         # add to time server
-        if _wm.is_connected():
+        if _nm.is_connected():
             try:
                 rtc.ntp_sync("pool.ntp.org")
             except:
@@ -362,8 +359,6 @@ try:
                 start_measurement()
     else:
         log("Measuring without network connection.")
-        ''' TODO it wasn't disabled orignaly '''
-        #_wlan.deinit()
         start_measurement()
 
 except Exception as e:

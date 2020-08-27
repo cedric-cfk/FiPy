@@ -24,6 +24,9 @@ class NetworkManager():
         print("starting client")
         netwok.enable_client()
 
+    def is_connected(self):
+        return netwok.is_connected()
+
     def scan(self):
         global wlan
         if wlan is None:
@@ -42,8 +45,8 @@ class NetworkManager():
             wlan = WLan(config)
         wlan.enable_ap()
 
-    def is_connected(self):
-        return netwok.is_connected()
+    def joined_ap_info(self):
+        return wlan.joined_ap_info()
 
 class Switcher(object):
     def indirect(self, method_name):
