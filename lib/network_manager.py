@@ -58,7 +58,6 @@ class Switcher(object):
         global wlan
         wlan = netwok
     def lte_M1(self):
-        raise ValueError('DONT USE LTE_M1!!!!!!')
         global netwok, wlan
         netwok = lte_M1()
         wlan = None
