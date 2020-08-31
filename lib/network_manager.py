@@ -20,7 +20,7 @@ class NetworkManager():
     def enable_client(self):
         #Initialising network defined by config
         if netwok is None:
-            Switcher().indirect(config.get_value('networking', 'network_config', 'using'))
+            Switcher().indirect(config.get_value('networking', 'general', 'using'))
         print("starting client")
         netwok.enable_client()
 
@@ -58,6 +58,7 @@ class Switcher(object):
         global wlan
         wlan = netwok
     def lte_M1(self):
+        raise ValueError('DONT USE LTE_M1!!!!!!')
         global netwok, wlan
         netwok = lte_M1()
         wlan = None

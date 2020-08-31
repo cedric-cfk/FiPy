@@ -1,8 +1,10 @@
 {
     "networking": {
-        "network_config": {
+        "general": {
           "enabled": true,
-          "using": "wlan",
+          "using": "wlan"
+        },
+        "wlan": {
           "ssid": "",
           "encryption": 0,
           "password": "",
@@ -10,21 +12,21 @@
           "ifconfig": "dhcp",
           "available": {},
           "antenna_external": false,
-          "antenna_pin": "P12",
+          "antenna_pin": "P12"
+        },
+        "lte_NB1": {
           "apn": "",
           "band": ""
         },
-
+        "lora": {
+        },
         "accesspoint": {
             "enabled": true,
             "ssid": "hiverize-accespoint",
             "encryption": 3,
             "password": "hiverize",
             "channel": 4
-        },
-
-        "lora": {
-        },
+        }
     },
 
     "telemetry": {
@@ -62,7 +64,7 @@
     },
     "general": {
         "general": {
-            "button_ap_enabled": true,
+            "button_ap_enabled": false,
             "button_ap_pin": "P2",
             "initial_time": 946684800,
             "measurement_interval": 5,

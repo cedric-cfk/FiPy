@@ -219,9 +219,9 @@ def start_measurement():
             except:
                 print('OLED defect',end=' ')
 
-        print('   ', _config.get_value('networking', 'network_config', 'using'), ':   ', end = ' ')
+        print('   ', _config.get_value('networking', 'general', 'using'), ':   ', end = ' ')
         # Log measured values, if possible
-        if (_config.get_value('networking', 'network_config', 'enabled')
+        if (_config.get_value('networking', 'general', 'enabled')
                 and _nm.is_connected()
                 and _beep is not None):
             wdt.feed()
@@ -236,7 +236,7 @@ def start_measurement():
 
         # Trying to reconnect to wifi if possible:
         '''     Hier noch gucken ob man das veralgemeinern kann. Ansonsten in network)manager packen(TODO)     '''
-        if ( _config.get_value('networking', 'network_config', 'enabled')
+        if ( _config.get_value('networking', 'general', 'enabled')
                 and _beep is not None
                 and not _nm.is_connected()):
             log("wlan is enabled but not connected.")
@@ -329,7 +329,7 @@ if _config.get_value('general', 'general', 'button_ap_enabled'):
 log("Start -> Starting measurement setup...")
 wdt.feed()
 try:
-    if _config.get_value('networking', 'network_config', 'enabled'):
+    if _config.get_value('networking', 'general', 'enabled'):
         log("Network is enabled, trying to connect.")
         _nm.enable_client()
         _beep = logger.beep
