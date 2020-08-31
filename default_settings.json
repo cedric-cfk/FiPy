@@ -30,7 +30,7 @@
     "telemetry": {
         "beep": {
             "enabled": true,
-            "server": "https://bee-observer.org",
+            "server": "http://bee-observer.org",
             "sensor_key": ""
         }
     },

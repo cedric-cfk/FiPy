@@ -7,6 +7,7 @@ import logger
 from config import Config
 from networks.wlan import WLan
 from networks.lte_M1 import lte_M1
+from networks.lte_NB1 import lte_NB1
 
 netwok = None
 wlan = None
@@ -62,9 +63,9 @@ class Switcher(object):
         netwok = lte_M1()
         wlan = None
     def lte_NB1(self):
-        #global netwok, wlan
-        #netwok = lte_NB1()
-        #wlan = None
-        raise ValueError('network lte_NB1 not jet implemented')
+        global netwok, wlan
+        netwok = lte_NB1()
+        wlan = None
+        #raise ValueError('network lte_NB1 not jet implemented')
     def invalid(self):
         raise ValueError('invalid network configured in settings.json')

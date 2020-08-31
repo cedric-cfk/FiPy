@@ -331,6 +331,7 @@ wdt.feed()
 try:
     if _config.get_value('networking', 'network_config', 'enabled'):
         log("Network is enabled, trying to connect.")
+        wdt.init(timeout=10*6000*1000)
         _nm.enable_client()
         _beep = logger.beep
 
