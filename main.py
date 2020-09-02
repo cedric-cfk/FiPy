@@ -13,7 +13,7 @@ import uos
 # own code imports
 import webserver
 from config import Config
-from sensors import hx711, bme280
+from sensors import hx711, bme280, i2s
 import sensors.ssd1306
 from wlanmanager import WLanManager
 
@@ -176,6 +176,14 @@ def start_measurement():
             data.update(ds_data)
             print(' ')
         ms_ds_read = perf.read_ms() - ms_hx_read
+
+        # Read data from I2S
+        if i2s is not None:
+            i2s.read_fft()
+            print('I2S Finished')
+            #data['weight_kg'] = hx711akt
+        #ms_hx_read = perf.read_ms() - ms_bme_read
+
         # Determine and display the time
         write_time = time.time()
         write_time = write_time + 3600                          # UTC + 1 hour

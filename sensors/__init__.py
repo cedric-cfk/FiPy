@@ -10,6 +10,7 @@ from sensors.ds18x20 import DS18X20
 
 import sensors.bme280
 import sensors.hx711
+import sensors.i2s
 
 _config = Config()
 
@@ -88,3 +89,14 @@ if _config.get_value('sensors','bme280', 'enabled'):
         print("BME280 initialization failed. Is it connected properly?")
 else:
     bme280 = None
+
+if _config.get_value('sensors','i2s', 'enabled'):
+    hx711 = sensors.i2s.I2S(
+        _config.get_value('sensors', 'i2s', 'pin_bck'),
+        _config.get_value('sensors', 'i2s', 'pin_ws'),
+        _config.get_value('sensors', 'i2s', 'pin_sdin'),
+        _config.get_value('sensors', 'i2s', 'record_time_in_seconds'),
+        _config.get_value('sensors', 'i2s', 'sample_rate_in_hz')
+    )
+else:
+    hx711 = None

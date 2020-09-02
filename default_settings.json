@@ -59,6 +59,14 @@
             "enabled": true,
             "pin_sda": "P9",
             "pin_scl": "P10"
+        },
+        "i2s": {
+            "enabled": false,
+            "pin_bck": "P11",
+            "pin_ws": "P22",
+            "pin_sdin": "P21",
+            "record_time_in_seconds": 1,
+            "sample_rate_in_hz": 12050
         }
     },
     "general": {
