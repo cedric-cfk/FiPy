@@ -1,5 +1,6 @@
 import machine
 import usocket
+import sys
 
 class Response:
 
@@ -44,7 +45,7 @@ def request(method, url, data=None, json=None, headers={}, stream=None):
         path = ""
     except AttributeError as e:
         print(e)
-        return 
+        return
     if proto == "http:":
         port = 80
     elif proto == "https:":
@@ -60,8 +61,14 @@ def request(method, url, data=None, json=None, headers={}, stream=None):
 
     #ai = usocket.getaddrinfo(host, port, 0, usocket.SOCK_STREAM)
 
+    usocket.dnsserver(0, "1.1.1.1")
+    usocket.dnsserver(1, "8.8.8.8")
+    print(usocket.dnsserver())
+
     ai = usocket.getaddrinfo(host, port)
     ai = ai[0]
+
+    print(usocket.getaddrinfo('pycom.io', 80))
 
     s = usocket.socket(ai[0], ai[1], ai[2])
     s.setblocking(True)
@@ -94,7 +101,7 @@ def request(method, url, data=None, json=None, headers={}, stream=None):
         s.write(b"Connection: close\r\n")
         s.write(b"\r\n")
         sock_header_time = perf.read_ms() - sock_ssl_time
-        
+
         if data:
             s.write(data)
         sock_data_time = perf.read_ms() - sock_header_time
@@ -123,6 +130,7 @@ def request(method, url, data=None, json=None, headers={}, stream=None):
         sock_response_time = perf.read_ms() - sock_data_time
     except OSError:
         s.close()
+        print(sys.exc_info())
         raise
 
     print("Prep: {:.0f}ms Init: {:.0f}ms Connect: {:.0f}ms SSL: {:.0f}ms "

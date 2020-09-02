@@ -2,7 +2,7 @@
 import gc
 import logger
 import machine
-from machine import Pin, I2C
+from machine import Pin, I2C, Timer
 import micropython
 import network
 import pycom
@@ -225,6 +225,8 @@ def start_measurement():
                 and _nm.is_connected()
                 and _beep is not None):
             wdt.feed()
+            print(_nm.is_connected())
+            _nm.test()
             _beep.add(data)
         log(data)
         """ Data on SD-Card """
@@ -276,6 +278,9 @@ def start_measurement():
         wdt.feed()
 
         if time_until_measurement > 0:
+            if measurement_interval > 20:
+                for x in range(int(measurement_interval / 20)):
+                    Timer.Alarm(_nm.test(), (x + 1) * 20)
             rgb_led(0x080800)
             time.sleep_ms(int(time_until_measurement))
 
@@ -343,7 +348,7 @@ try:
             if (reset_causes[machine.reset_cause()]=='PWRON'
                         and not _config.get_value('general', 'general', 'button_ap_enabled')):
                     enable_ap()
-                    wdt.init(timeout=10*60*1000)
+                    wdt.init(timeout=1*60*1000)
                     log("starting Accesspoint after PowerOn for 10 min")
             else:
                 start_measurement()

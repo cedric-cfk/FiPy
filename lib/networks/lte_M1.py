@@ -1,9 +1,31 @@
 from network import LTE
 import _thread
 import time
+import usocket
 from machine import Timer
 
 class lte_M1():
+    def __init__(self):
+        self.lte = None
+
+    def test(self):
+        #print(usocket.getaddrinfo('pycom.io', 80))
+
+        try:
+            #print(socket.getaddrinfo('pycom.io', 80))
+            s = usocket.socket()
+            #s = ssl.wrap_socket(s)
+            s.connect(usocket.getaddrinfo('www.google.com', 443)[0][-1])
+            s.send(b"GET / HTTP/1.0\r\n\r\n")
+            #print(s.recv(4096))
+            s.close()
+        except Exception as e:
+            print("Error")
+            print(e)
+            self.lte.disconnect()
+            self.lte.detach()
+
+
     def is_connected(self):
         return self.lte.isconnected()
 
@@ -12,7 +34,11 @@ class lte_M1():
         self.timeoutLte = False
         alarm = Timer.Alarm(self.timeout_lte, 300)
 
-        self.lte = LTE()         # instantiate the LTE object
+        if self.lte == None:
+            self.lte = LTE()         # instantiate the LTE object
+        else:
+            self.lte.deinit()
+
         print(self.lte.isconnected())
         print(self.timeoutLte)
         while not self.lte.isconnected() and not self.timeoutLte:

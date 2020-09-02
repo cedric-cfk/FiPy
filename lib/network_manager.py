@@ -17,6 +17,9 @@ class NetworkManager():
         global config
         config = _config
 
+    def test(self):
+        netwok.test()
+
     def enable_client(self):
         #Initialising network defined by config
         if netwok is None:
