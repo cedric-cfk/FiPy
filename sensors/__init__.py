@@ -91,7 +91,7 @@ else:
     bme280 = None
 
 if _config.get_value('sensors','i2s', 'enabled'):
-    hx711 = sensors.i2s.I2S(
+    i2s = sensors.i2s.I2S(
         _config.get_value('sensors', 'i2s', 'pin_bck'),
         _config.get_value('sensors', 'i2s', 'pin_ws'),
         _config.get_value('sensors', 'i2s', 'pin_sdin'),
@@ -99,4 +99,4 @@ if _config.get_value('sensors','i2s', 'enabled'):
         _config.get_value('sensors', 'i2s', 'sample_rate_in_hz')
     )
 else:
-    hx711 = None
+    i2s = None

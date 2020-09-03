@@ -17,9 +17,7 @@
 
 import os
 import ulab as np
-from machine import Pin
-from machine import SD
-from machine import I2S
+from machine import Pin, SD, I2S as I2Sm
 from ulab import fft
 
 
@@ -38,13 +36,13 @@ class I2S:
         ws_pin = Pin(ws)
         sdin_pin = Pin(sdin)
 
-        self.audio_in = I2S(
-            I2S.NUM0,
+        self.audio_in = I2Sm(
+            I2Sm.NUM0,
             bck=bck_pin, ws=ws_pin, sdin=sdin_pin,
-            standard=I2S.PHILIPS,
-            mode=I2S.MASTER_RX,
-            dataformat=I2S.B32,
-            channelformat=I2S.ONLY_LEFT,
+            standard=I2Sm.PHILIPS,
+            mode=I2Sm.MASTER_RX,
+            dataformat=I2Sm.B32,
+            channelformat=I2Sm.ONLY_LEFT,
             samplerate=sample_rate_in_Hz,
             dmacount=50,
             dmalen=num_samples_in_dma_buffer
@@ -53,15 +51,17 @@ class I2S:
         # configure SD card
         #   slot=2 configures SD card to use the SPI3 controller (VSPI), DMA channel = 2
         #   slot=3 configures SD card to use the SPI2 controller (HSPI), DMA channel = 1
-        self.sd = SD()
-        os.mount(sd, "/sd")
-
+        try:
+            os.listdir('/sd')
+        except:
+            print('no SD-Card mounted!\n mounting SD-Card')
+            sd = SD()
+            os.mount(sd, "/sd")
         # create audio dir in case it does not exist
         try:
             os.stat('/sd/audio')
         except:
             os.mkdir('/sd/audio')
-
     # snip_16_mono():  snip 16-bit samples from a 32-bit mono sample stream
     # assumption: I2S configuration for mono microphone.  e.g. I2S channelformat = ONLY_LEFT or ONLY_RIGHT
     # example snip:
@@ -99,7 +99,7 @@ class I2S:
             try:
                 # try to read a block of samples from the I2S microphone
                 # readinto() method returns 0 if no DMA buffer is full
-                num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv, timeout=0)
+                num_bytes_read_from_mic = self.audio_in.readinto(mic_samples_mv, timeout=0)
 
                 if num_bytes_read_from_mic > 0:
                     #calculate fft
@@ -121,8 +121,4 @@ class I2S:
 
         # do not deinit audio in case you will record an other round
         #audio_in.deinit()
-        print('#'+str(i)+' ... done! -- %d sample bytes written to txt file' % num_sample_bytes_written)
-        print()
-
-
-    print('All done!')
+        print('done! -- %d sample bytes written to txt file' % num_sample_bytes_written)
